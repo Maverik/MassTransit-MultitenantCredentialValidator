@@ -20,23 +20,19 @@ namespace CredentialValidator
         {
             ConsumeContext<ITenantContext> tenantContext;
 
-            if (!context.TryGetMessage(out tenantContext))
+            //Default repository that'll always return false
+            var repository = _scope.Resolve<ICredentialRepository>();
+
+            if (context.TryGetMessage(out tenantContext))
             {
-                Console.WriteLine("No tenant information found. Process aborted");
+                var scope = _scope.Resolve<ILifetimeScopeRegistry<string>>().GetLifetimeScope(tenantContext.Message.TenantId);
 
-                return Task.CompletedTask;
+                //Try to get repository for this tenant using our naming convention
+                //We ignore the failure case as 
+                var repositoryOverride = scope.ResolveOptionalNamed<ICredentialRepository>($"{nameof(ICredentialRepository)}-{tenantContext.Message.TenantId}");
+
+                if (repositoryOverride != null) repository = repositoryOverride;
             }
-
-            var scope = _scope.Resolve<ILifetimeScopeRegistry<string>>().GetLifetimeScope(tenantContext.Message.TenantId);
-
-            object resolvedRepository;
-
-            //Try to get repository for this tenant using our naming convention
-            if (!scope.TryResolveNamed($"{nameof(ICredentialRepository)}-{tenantContext.Message.TenantId}", typeof(ICredentialRepository), out resolvedRepository))
-                //Default repository that'll always return false
-                resolvedRepository = scope.Resolve<ICredentialRepository>();
-
-            var repository = (ICredentialRepository)resolvedRepository;
 
             Console.WriteLine($"Validating credential for tenant: {tenantContext.Message.TenantId}, using repository tenant: {repository.TenantId}");
 
