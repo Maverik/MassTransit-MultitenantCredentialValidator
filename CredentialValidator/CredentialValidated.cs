@@ -1,17 +1,14 @@
-﻿using Common;
+﻿using System;
+using Common;
 
 namespace CredentialValidator
 {
-    class CredentialValidated : ICredentialValidated
+    class CredentialValidated : ICredentialValidated, ITenantContext
     {
-        public CredentialValidated(bool status, string tenantId)
-        {
-            Status = status;
-            TenantId = tenantId;
-        }
+        public bool Status { get; set; }
 
-        public bool Status { get; }
+        public Uri SenderAddress { get; set; }
 
-        public string TenantId { get; }
+        public string TenantId { get; set; }
     }
 }

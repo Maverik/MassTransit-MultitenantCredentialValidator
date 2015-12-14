@@ -42,7 +42,7 @@
   <ItemGroup>
     <Compile Include="ICredentialRepository.cs" />
     <Compile Include="ICredentialValidated.cs" />
-    <Compile Include="IMultiTenantMessage.cs" />
+    <Compile Include="ITenantContext.cs" />
     <Compile Include="IValidateCredential.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RabbitBusSettings.cs" />

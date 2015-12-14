@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
@@ -32,7 +33,7 @@ namespace CredentialClient
 
                 options.WithParsed(async x =>
                 {
-                    await bus.Publish(new ValidateCredential { Username = x.Username, Password = x.Password, TenantId = x.TenantId });
+                    await bus.Publish(new ValidateCredential { Username = x.Username, Password = x.Password, TenantId = x.TenantId, SenderAddress = bus.Address });
                     Console.WriteLine($"Credential validation message sent for tenant: {x.TenantId}");
                 });
 

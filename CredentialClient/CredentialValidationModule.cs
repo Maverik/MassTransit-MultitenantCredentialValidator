@@ -7,7 +7,7 @@ namespace CredentialClient
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<CredentialValidatedConsumer>()
-                .InstancePerMatchingLifetimeScope("MultitenantClient")
+                //.InstancePerMatchingLifetimeScope("MultitenantClient")
                 .SingleInstance();
         }
     }

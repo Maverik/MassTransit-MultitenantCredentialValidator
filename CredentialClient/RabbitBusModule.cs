@@ -25,13 +25,13 @@ namespace CredentialClient
 
                     cfg.Durable = false;
                     cfg.AutoDelete = true;
-
+                    
                     cfg.ReceiveEndpoint(host, ec =>
                     {
                         ec.Durable = false;
                         ec.AutoDelete = true;
 
-                        ec.ConsumerInScope<CredentialValidatedConsumer, string>(context, "MultitenantCredentialClient");
+                        ec.Consumer<CredentialValidatedConsumer>();
                     });
                 });
             })

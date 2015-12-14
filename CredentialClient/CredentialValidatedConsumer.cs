@@ -10,7 +10,11 @@ namespace CredentialClient
     {
         public Task Consume(ConsumeContext<ICredentialValidated> context)
         {
-            Console.WriteLine($"Got response: {context.Message.Status} for tenantId {context.Message.TenantId}");
+            ConsumeContext<ITenantContext> tenantContext;
+
+            Console.WriteLine(context.TryGetMessage(out tenantContext) ?
+                $"Got response: {context.Message.Status} for tenantId {tenantContext.Message.TenantId}" :
+                $"Got response: {context.Message.Status} without tenant context");
             return TaskUtil.Completed;
         }
     }

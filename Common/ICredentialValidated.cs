@@ -1,6 +1,6 @@
 ﻿namespace Common
 {
-    public interface ICredentialValidated : IMultiTenantMessage
+    public interface ICredentialValidated
     {
         bool Status { get; }
     }
