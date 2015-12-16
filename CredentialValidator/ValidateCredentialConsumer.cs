@@ -4,6 +4,7 @@ using Autofac;
 using Common;
 using MassTransit;
 using MassTransit.AutofacIntegration;
+using MassTransit.Util;
 
 namespace CredentialValidator
 {
@@ -16,7 +17,7 @@ namespace CredentialValidator
             _scope = scope;
         }
 
-        public Task Consume(ConsumeContext<IValidateCredential> context)
+        public async Task Consume(ConsumeContext<IValidateCredential> context)
         {
             ConsumeContext<ITenantContext> tenantContext;
 
@@ -28,7 +29,6 @@ namespace CredentialValidator
                 var scope = _scope.Resolve<ILifetimeScopeRegistry<string>>().GetLifetimeScope(tenantContext.Message.TenantId);
 
                 //Try to get repository for this tenant using our naming convention
-                //We ignore the failure case as 
                 var repositoryOverride = scope.ResolveOptionalNamed<ICredentialRepository>($"{nameof(ICredentialRepository)}-{tenantContext.Message.TenantId}");
 
                 if (repositoryOverride != null) repository = repositoryOverride;
@@ -36,8 +36,7 @@ namespace CredentialValidator
 
             Console.WriteLine($"Validating credential for tenant: {tenantContext.Message.TenantId}, using repository tenant: {repository.TenantId}");
 
-            return context.RespondAsync(new CredentialValidated { Status = repository.ValidateCredential(context.Message.Username, context.Message.Password), TenantId = repository.TenantId });
-
+            await context.RespondAsync(new CredentialValidated {Status = repository.ValidateCredential(context.Message.Username, context.Message.Password), TenantId = repository.TenantId}).ConfigureAwait(false);
         }
     }
 }

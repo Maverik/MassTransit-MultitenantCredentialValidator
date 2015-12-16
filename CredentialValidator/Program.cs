@@ -21,7 +21,7 @@ namespace CredentialValidator
 
             BusHandle handle = null;
 
-            Task.Run(async () => handle = await bus.StartAsync());
+            Task.Run(async () => handle = await bus.StartAsync().ConfigureAwait(false));
 
             Console.WriteLine("Listening for messages...");
 
