@@ -9,14 +9,14 @@ namespace CredentialClient
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<RabbitBusSettings>();
-
+            
             builder.Register(context =>
             {
                 var busSettings = context.Resolve<RabbitBusSettings>();
 
                 return Bus.Factory.CreateUsingRabbitMq(cfg =>
                 {
-                    var host = cfg.Host(busSettings.HostAddress, h =>
+                    cfg.Host(busSettings.HostAddress, h =>
                     {
                         h.Username(busSettings.Username);
                         h.Password(busSettings.Password);
@@ -25,14 +25,6 @@ namespace CredentialClient
 
                     cfg.Durable = false;
                     cfg.AutoDelete = true;
-                    
-                    cfg.ReceiveEndpoint(host, ec =>
-                    {
-                        ec.Durable = false;
-                        ec.AutoDelete = true;
-
-                        ec.Consumer<CredentialValidatedConsumer>();
-                    });
                 });
             })
                 .SingleInstance()

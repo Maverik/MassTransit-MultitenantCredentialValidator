@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using CommandLine;
+using Common;
 using MassTransit;
 
 namespace CredentialClient
@@ -17,8 +16,7 @@ namespace CredentialClient
             var builder = new ContainerBuilder();
 
             options.WithParsed(x => builder.RegisterLifetimeScopeRegistry<string>(x.TenantId));
-
-            builder.RegisterModule<CredentialValidationModule>();
+            
             builder.RegisterModule<RabbitBusModule>();
 
             var container = builder.Build();
@@ -33,8 +31,11 @@ namespace CredentialClient
 
                 options.WithParsed(async x =>
                 {
-                    await bus.Publish(new ValidateCredential { Username = x.Username, Password = x.Password, TenantId = x.TenantId, SenderAddress = bus.Address });
-                    Console.WriteLine($"Credential validation message sent for tenant: {x.TenantId}");
+                    Console.WriteLine($"Requesting validation for username {x.Username}, password {x.Password}, tenantId {x.TenantId}");
+
+                    var response = await bus.CreatePublishRequestClient<ValidateCredential, ICredentialValidated>(TimeSpan.FromSeconds(10)).Request(new ValidateCredential { Username = x.Username, Password = x.Password, TenantId = x.TenantId });
+
+                    Console.WriteLine($"Credential validation response was {response.Status}");
                 });
 
             }));

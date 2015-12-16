@@ -36,7 +36,7 @@ namespace CredentialValidator
 
             Console.WriteLine($"Validating credential for tenant: {tenantContext.Message.TenantId}, using repository tenant: {repository.TenantId}");
 
-            return context.Publish(new CredentialValidated { Status = repository.ValidateCredential(context.Message.Username, context.Message.Password), TenantId = repository.TenantId });
+            return context.RespondAsync(new CredentialValidated { Status = repository.ValidateCredential(context.Message.Username, context.Message.Password), TenantId = repository.TenantId });
 
         }
     }
