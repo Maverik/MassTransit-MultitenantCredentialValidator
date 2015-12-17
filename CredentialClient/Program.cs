@@ -16,7 +16,7 @@ namespace CredentialClient
             var builder = new ContainerBuilder();
 
             options.WithParsed(x => builder.RegisterLifetimeScopeRegistry<string>(x.TenantId));
-            
+
             builder.RegisterModule<RabbitBusModule>();
 
             var container = builder.Build();
@@ -33,7 +33,7 @@ namespace CredentialClient
                 {
                     Console.WriteLine($"Requesting validation for username {x.Username}, password {x.Password}, tenantId {x.TenantId}");
 
-                    var response = await bus.CreatePublishRequestClient<ValidateCredential, ICredentialValidated>(TimeSpan.FromSeconds(10)).Request(new ValidateCredential { Username = x.Username, Password = x.Password, TenantId = x.TenantId }).ConfigureAwait(false);
+                    var response = await bus.CreatePublishRequestClient<ValidateCredential, ICredentialValidated>(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10)).Request(new ValidateCredential { Username = x.Username, Password = x.Password, TenantId = x.TenantId }).ConfigureAwait(false);
 
                     Console.WriteLine($"Credential validation response was {response.Status}");
                 });
